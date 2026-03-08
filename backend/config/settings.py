@@ -1,14 +1,16 @@
 from pathlib import Path
 from decouple import config
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="unsafe-secret-key")
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost",
-                       cast=lambda v: [s.strip() for s in v.split(",")])
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="127.0.0.1,localhost,school-suite.onrender.com",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -62,24 +64,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-USE_POSTGRES = config("DB_NAME", default="") != ""
+USE_POSTGRES = config("USE_POSTGRES", default=False, cast=bool)
 
-if DEBUG:
+if USE_POSTGRES:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASSWORD"),
+            "HOST": config("DB_HOST"),
+            "PORT": config("DB_PORT", default=5432, cast=int),
         }
     }
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": config("school_suite"),
-            "USER": config("admin"),
-            "PASSWORD": config("admin1234"),
-            "HOST": config("DB_HOST", default="localhost"),
-            "PORT": config("DB_PORT", default=5432, cast=int),
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
@@ -105,9 +107,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:3000",
-    cast=lambda v: [s.strip() for s in v.split(",")]
+    default="http://localhost:3000,https://school-suite.onrender.com",
+    cast=lambda v: [s.strip() for s in v.split(",")],
 )
+
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="https://school-suite.onrender.com",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+)
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
