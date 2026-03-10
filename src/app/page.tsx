@@ -33,15 +33,15 @@ export default function Home() {
   <div className="absolute inset-0 z-0">
 
     {/* Blur Image */}
-    <div className="relative w-full h-full">
-    <Image
-      src="/bg.webp"
-      alt="Campus"
-      fill
-      className="object-cover scale-110 blur-3xl opacity-40"
-      priority
-    />
-  </div>
+    <div className="relative w-full h-full min-h-screen"> {/* Ensure height exists */}
+  <Image
+    src="/bg.webp"
+    alt="Campus"
+    fill
+    className="object-cover scale-110 blur-3xl opacity-40 -z-10" // Added -z-10
+    priority
+  />
+</div>
 
     {/* Gradient overlay */}
     <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />

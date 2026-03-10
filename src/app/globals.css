@@ -49,7 +49,7 @@
 
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.05); }
+    50% { opacity: 0.85; transform: scale(1.02); }
   }
 
 
@@ -127,7 +127,7 @@
 @layer utilities {
   /* Premium Frosted Glass Effect */
   .glass {
-    @apply bg-background/60 backdrop-blur-xl border border-border/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
+    @apply bg-[oklch(0.99_0.005_240/0.8)] backdrop-blur-md border-b border-[oklch(0.50_0.12_255/0.1)];
   }
 
   /* Text Gradient Utility */
@@ -146,4 +146,8 @@
     border: 1px solid oklch(1 0 0 / 15%);
     box-shadow: 0 8px 32px 0 oklch(0.25 0.03 250 / 5%);
   }
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
 }
