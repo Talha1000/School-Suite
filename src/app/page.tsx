@@ -14,11 +14,11 @@ import {
   BookOpen
 } from "lucide-react";
 
-import NoticeBoard from "@/components/NoticeBoard";
-import NewsEvents from "@/components/NewsEvents";
-import Gallery from "@/components/Gallery";
-import Achievements from "@/components/Achievements";
-import Faculty from "@/components/Faculty";
+import NoticeBoard from "@/components/nav-pages/NoticeBoard";
+import NewsEvents from "@/components/nav-pages/NewsEvents";
+import Gallery from "@/components/nav-pages/Gallery";
+import Achievements from "@/components/nav-pages/Achievements";
+import Faculty from "@/components/nav-pages/Faculty";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("prospective");
@@ -27,112 +27,113 @@ export default function Home() {
     <main className="flex flex-col min-h-screen bg-background font-sans">
       
       {/* --- HERO SECTION --- */}
-      <section className="relative w-full pt-20 pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
+{/* --- HERO SECTION --- */}
+<section className="relative w-full pt-20 pb-20 lg:pt-32 lg:pb-32 overflow-hidden bg-background">
 
-  {/* Background */}
   <div className="absolute inset-0 z-0">
-
-    {/* Blur Image */}
-    <div className="relative w-full h-full min-h-screen"> {/* Ensure height exists */}
-  <Image
-    src="/bg.webp"
-    alt="Campus"
-    fill
-    className="object-cover scale-110 blur-3xl opacity-40 -z-10" // Added -z-10
-    priority
+  
+  {/* The Image Layer - Reduced blur and increased opacity */}
+  <div 
+    className="absolute inset-0 scale-105 blur-xl animate-slow-zoom" 
+    style={{ 
+      backgroundImage: "url('/bg.webp')", 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }} 
   />
+
+  {/* FIXED GRADIENT: Changed from background to transparent to stop the "white" wash */}
+  <div className="absolute inset-0 bg-gradient-to-tr from-background via-transparent to-primary/5" />
+
+  {/* Glow effects - Lowered blur so they don't turn everything white */}
+  <div className="absolute inset-0 z-0">
+  
+  {/* The Image Layer - Reduced blur and increased opacity */}
+  <div 
+    className="absolute inset-0 scale-105 blur-xl opacity-60 animate-slow-zoom" 
+    style={{ 
+      backgroundImage: "url('/bg.webp')", 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }} 
+  />
+
+  {/* FIXED GRADIENT: Changed from background to transparent to stop the "white" wash */}
+  
+  {/* Glow effects - Lowered blur so they don't turn everything white */}
+  <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/30 rounded-full blur-[120px]" />
+  <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/20 rounded-full blur-[120px]" />
+
+</div>
 </div>
 
-    {/* Gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
-
-    {/* Glow effects */}
-    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[140px]" />
-    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[140px]" />
-
-  </div>
-
-  {/* Content */}
+  {/* Content (relative z-10 ensures it stays on top) */}
   <div className="container px-4 md:px-6 mx-auto relative z-10">
-
     <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-      {/* Left */}
+      {/* Left Text */}
       <div className="space-y-8 text-center lg:text-left">
-
-        <div className="inline-flex items-center rounded-full border border-primary/30 px-4 py-1.5 text-sm font-medium bg-primary/10 text-primary backdrop-blur-md">
+        <div className="inline-flex items-center rounded-full border border-primary/30 px-4 py-1.5 text-sm font-medium bg-primary/10 text-primary backdrop-blur-md hover:scale-105 transition-transform">
           <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse" />
           Admissions for Fall 2026 are now open
         </div>
 
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight">
-  Empowering the <br className="hidden md:block" />
-  <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
-    Leaders of Tomorrow
-  </span>
-</h1>
+          Empowering the <br className="hidden md:block" />
+          <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Leaders of Tomorrow
+          </span>
+        </h1>
 
-        <p className="max-w-[600px] mx-auto lg:mx-0 text-muted-foreground text-lg md:text-xl">
+        <p className="max-w-[600px] mx-auto lg:mx-0 text-black text-lg md:text-xl leading-relaxed">
           A world-class educational environment fostering innovation,
           critical thinking, and a global perspective.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-
           <Link
-            href="/public/admissions"
-            className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-semibold hover:shadow-xl transition-all flex items-center justify-center group"
+            href="/admissions"
+            className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-semibold hover:shadow-[0_10px_20px_rgba(var(--primary),0.3)] hover:-translate-y-1 transition-all flex items-center justify-center group"
           >
             Start Your Journey
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform"/>
           </Link>
 
           <Link
-            href="/public/about"
-            className="h-14 px-8 rounded-full border border-border bg-background/60 backdrop-blur-md font-semibold hover:bg-muted transition-all flex items-center justify-center"
+            href="/about"
+            className="h-14 px-8 rounded-full border border-border bg-background/40 backdrop-blur-md font-semibold hover:bg-muted transition-all flex items-center justify-center"
           >
             Explore Campus
           </Link>
-
         </div>
-
       </div>
 
-      {/* Right Image */}
-      <div className="relative mx-auto w-full max-w-[550px] aspect-[4/3] lg:aspect-square group rounded-3xl overflow-hidden shadow-2xl">
-
+      {/* Right Image with Float Effect */}
+      <div className="relative mx-auto w-full max-w-[550px] aspect-square group rounded-3xl overflow-hidden shadow-2xl animate-float">
         <Image
           src="/Home.jpg"
-          alt="Students collaborating"
+          alt="Students"
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-1000"
+          className="object-cover group-hover:scale-110 transition-transform duration-700"
         />
-
-        {/* Glass Stats Card */}
-        <div className="absolute bottom-6 left-6 right-6 bg-white/20 backdrop-blur-xl p-6 rounded-2xl border border-white/30 shadow-xl flex items-center justify-between">
-
+        
+        {/* Floating Stats Card */}
+        <div className="absolute bottom-6 left-6 right-6 glass-white p-6 rounded-2xl flex items-center justify-between border border-white/20">
           <div>
-            <p className="text-3xl font-black text-white">2,500+</p>
-            <p className="text-xs text-white/80 uppercase font-bold tracking-wider mt-1">
-              Global Alumni
-            </p>
+            <p className="text-3xl font-black text-primary">2,500+</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Global Alumni</p>
           </div>
-
-          <div className="h-12 w-[1px] bg-white/30"/>
-
+          <div className="h-10 w-[1px] bg-border/50"/>
           <div>
-            <p className="text-3xl font-black text-white">1:10</p>
-            <p className="text-xs text-white/80 uppercase font-bold tracking-wider mt-1">
-              Student Ratio
-            </p>
+            <p className="text-3xl font-black text-primary">1:10</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Student Ratio</p>
           </div>
-
         </div>
-
       </div>
 
     </div>
-
   </div>
 </section>
 

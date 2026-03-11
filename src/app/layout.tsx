@@ -26,7 +26,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} antialiased min-h-screen flex flex-col`}>
         {/* 2. ThemeProvider enables the Light/Dark mode logic globally */}
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="system" 
+          enableSystem
+          disableTransitionOnChange // <-- This is the magic fix for the lag!
+        >
           
           <div className="flex flex-col min-h-screen">
             {/* 3. Global Navigation remains visible on all pages */}
