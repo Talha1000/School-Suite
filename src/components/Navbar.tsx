@@ -53,37 +53,37 @@ interface NavSection {
 
 const navData: NavSection[] = [
   { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
+  { name: "About", href: "/public/about" },
   {
-    name: "Academics",
+    name: "Academics", 
     subItems: [
-      { name: "Curriculum", href: "/academics/curriculum", description: "Core academic standards and electives.", icon: <BookOpen size={20} /> },
-      { name: "Departments", href: "/academics/departments", description: "Explore our specialized subject faculties.", icon: <School size={20} /> },
-      { name: "Library", href: "/academics/library", description: "Our research hub and digital resources.", icon: <GraduationCap size={20} /> },
-      { name: "Academic Calendar", href: "/academics/calendar", description: "Stay updated on semesters and holidays.", icon: <Calendar size={20} /> },
+      { name: "Curriculum", href: "/public/academics/curriculum", description: "Core academic standards and electives.", icon: <BookOpen size={20} /> },
+      { name: "Departments", href: "/public/academics/departments", description: "Explore our specialized subject faculties.", icon: <School size={20} /> },
+      { name: "Library", href: "/public/academics/library", description: "Our research hub and digital resources.", icon: <GraduationCap size={20} /> },
+      { name: "Academic Calendar", href: "/public/academics/calendar", description: "Stay updated on semesters and holidays.", icon: <Calendar size={20} /> },
     ],
   },
   {
     name: "Admissions",
     subItems: [
-      { name: "Process", href: "/admissions/apply", description: "Step-by-step guide to joining us." },
-      { name: "Fees & Scholarships", href: "/admissions/fees", description: "Investing in your child's future." },
-      { name: "Virtual Tour", href: "/admissions/tour", description: "Explore our campus from anywhere.", icon: <Map size={20} /> },
-      { name: "FAQ", href: "/admissions/faq", description: "Common questions and answers." },
+      { name: "Process", href: "/public/admissions/apply", description: "Step-by-step guide to joining us." },
+      { name: "Fees & Scholarships", href: "/public/admissions/fees", description: "Investing in your child's future." },
+      { name: "Virtual Tour", href: "/public/admissions/tour", description: "Explore our campus from anywhere.", icon: <Map size={20} /> },
+      { name: "FAQ", href: "/public/admissions/faq", description: "Common questions and answers." },
     ],
   },
   {
     name: "Facilities",
     subItems: [
-      { name: "Academic Facilities", href: "/facilities/academic" },
-      { name: "Sports & Physical Ed", href: "/facilities/sports" },
-      { name: "Arts & Performance", href: "/facilities/arts" },
-      { name: "Campus & Welfare", href: "/facilities/infrastructure" },
+      { name: "Academic Facilities", href: "/public/facilities/academic" },
+      { name: "Sports & Physical Ed", href: "/public/facilities/sports" },
+      { name: "Arts & Performance", href: "/public/facilities/arts" },
+      { name: "Campus & Welfare", href: "/public/facilities/infrastructure" },
     ],
   },
-  { name: "Payment", href: "/payment" },
-  { name: "Career", href: "/career" },
-  { name: "Blog", href: "/blog" },
+  { name: "Payment", href: "/public/payment" },
+  { name: "Career", href: "/public/career" },
+  { name: "Blog", href: "/public/blog" },
   {
     name: "Notice",
     subItems: notices.map((notice) => ({
@@ -169,7 +169,7 @@ export default function Navbar() {
               
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/contact" className={cn("block", navItemClass)}>
+                  <Link href="/public/contact" className={cn("block", navItemClass)}>
                     Contact
                   </Link>
                 </NavigationMenuLink>

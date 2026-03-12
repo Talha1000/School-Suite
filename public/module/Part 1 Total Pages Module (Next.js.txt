@@ -24,3 +24,28 @@ src/
             │   └── page.tsx    <-- Parent Login Page
             └── admin/
                 └── page.tsx    <-- Admin Login Page
+
+
+
+
+app/
+├── about/page.tsx
+├── public -
+     academics/
+│   ├── curriculum/page.tsx
+│   ├── departments/page.tsx
+│   ├── library/page.tsx
+│   └── calendar/page.tsx
+├── admissions/
+│   ├── apply/page.tsx
+│   ├── fees/page.tsx
+│   ├── tour/page.tsx
+│   └── faq/page.tsx
+├── facilities/
+│   ├── academic/page.tsx
+│   ├── sports/page.tsx
+│   ├── arts/page.tsx
+│   └── infrastructure/page.tsx
+├── payment/page.tsx
+├── career/page.tsx
+└── blog/page.tsx

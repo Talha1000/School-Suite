@@ -14,11 +14,11 @@ import {
   BookOpen
 } from "lucide-react";
 
-import NoticeBoard from "@/components/nav-pages/NoticeBoard";
-import NewsEvents from "@/components/nav-pages/NewsEvents";
-import Gallery from "@/components/nav-pages/Gallery";
-import Achievements from "@/components/nav-pages/Achievements";
-import Faculty from "@/components/nav-pages/Faculty";
+import NoticeBoard from "@/components/home sections/NoticeBoard";
+import NewsEvents from "@/components/home sections/NewsEvents";
+import Gallery from "@/components/home sections/Gallery";
+import Achievements from "@/components/home sections/Achievements";
+import Faculty from "@/components/home sections/Faculty";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("prospective");
