@@ -1,10 +1,17 @@
+import React from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+
 export default function AdmissionPage() {
+  // In a real app, fetch the role from your Auth state/session context
+  const currentRole = "Admin";
+
   return (
-    <div className="container mx-auto p-6 md:p-8">
-      <h1 className="text-3xl font-bold tracking-tight mb-4">Admission Panel</h1>
-      <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
-        <p className="text-muted-foreground">Manage new student applications and enrollments here.</p>
+    <DashboardLayout pageTitle="Admission Panel" role={currentRole}>
+      {/* Main Content Rendered inside the standard layout */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-xl font-bold text-slate-800 mb-4">New Admissions</h2>
+        <p className="text-slate-600">Admission form and data tables go here...</p>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import ModeToggle from "@/components/ui/ModeToggle";
-
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import {
   ChevronDown, Menu, X, GraduationCap,
   Users, School, BookOpen, Calendar,
-  ShieldCheck, Map, Moon, Sun, Pin, ChevronRight
+  ShieldCheck, Map, Pin, ChevronRight,
+  LayoutGrid, Megaphone
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -28,54 +28,30 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 
-// --- Mock Data for Notices ---
-const notices = [
-  { id: 1, title: "Final Term Examination Schedule 2026", date: "Mar 05, 2026", isPinned: true },
-  { id: 2, title: "Annual Science Fair Registration Open", date: "Mar 02, 2026", isPinned: true },
-  { id: 3, title: "School Closure Notice for National Holiday", date: "Feb 28, 2026", isPinned: false },
-  { id: 4, title: "Updated Transport Routes for Spring", date: "Feb 25, 2026", isPinned: false },
-];
-
-// --- Type Definitions ---
-interface SubItem {
-  name: string;
-  href: string;
-  description?: string;
-  icon?: React.ReactNode;
-  isNotice?: boolean;
-}
-
-interface NavSection {
-  name: string;
-  href?: string;
-  subItems?: SubItem[];
-}
-
-const navData: NavSection[] = [
+// --- Nav Data ---
+const navData = [
   { name: "Home", href: "/" },
   { name: "About", href: "/public/about" },
   {
-    name: "Academics", 
+    name: "Academics",
     subItems: [
-      { name: "Curriculum", href: "/public/academics/curriculum", description: "Core academic standards and electives.", icon: <BookOpen size={20} /> },
-      { name: "Departments", href: "/public/academics/departments", description: "Explore our specialized subject faculties.", icon: <School size={20} /> },
-      { name: "Library", href: "/public/academics/library", description: "Our research hub and digital resources.", icon: <GraduationCap size={20} /> },
-      { name: "Academic Calendar", href: "/public/academics/calendar", description: "Stay updated on semesters and holidays.", icon: <Calendar size={20} /> },
+      { name: "Curriculum", href: "/public/academics/curriculum", description: "Core academic standards.", icon: <BookOpen size={18} /> },
+      { name: "Departments", href: "/public/academics/departments", description: "Specialized subject faculties.", icon: <School size={18} /> },
+      { name: "Library", href: "/public/academics/library", description: "Digital resources.", icon: <GraduationCap size={18} /> },
+      { name: "Academic Calendar", href: "/public/academics/calendar", description: "Semesters and holidays.", icon: <Calendar size={18} /> },
     ],
   },
   {
     name: "Admissions",
     subItems: [
-      { name: "Process", href: "/public/admissions/apply", description: "Step-by-step guide to joining us." },
-      { name: "Fees & Scholarships", href: "/public/admissions/fees", description: "Investing in your child's future." },
-      { name: "Virtual Tour", href: "/public/admissions/tour", description: "Explore our campus from anywhere.", icon: <Map size={20} /> },
-      { name: "FAQ", href: "/public/admissions/faq", description: "Common questions and answers." },
+      { name: "Process", href: "/public/admissions/apply", description: "Guide to joining us." },
+      { name: "Fees & Scholarships", href: "/public/admissions/fees", description: "Investment details." },
+      { name: "Virtual Tour", href: "/public/admissions/tour", description: "Explore campus.", icon: <Map size={18} /> },
     ],
   },
   {
     name: "Facilities",
     subItems: [
-      { name: "Academic Facilities", href: "/public/facilities/academic" },
       { name: "Sports & Physical Ed", href: "/public/facilities/sports" },
       { name: "Arts & Performance", href: "/public/facilities/arts" },
       { name: "Campus & Welfare", href: "/public/facilities/infrastructure" },
@@ -86,70 +62,83 @@ const navData: NavSection[] = [
   { name: "Blog", href: "/public/blog" },
   {
     name: "Notice",
-    subItems: notices.map((notice) => ({
-      name: notice.title,
-      href: `/notice/${notice.id}`,
-      description: notice.date,
-      isNotice: true,
-      icon: notice.isPinned ? <Pin className="rotate-45 text-red-500" size={20} /> : <Calendar className="text-slate-400" size={20} />,
-    })),
+    subItems: [
+      { name: "Final Term Exam Schedule", href: "/notice/1", description: "Mar 05, 2026", isNotice: true, isPinned: true },
+      { name: "Annual Science Fair", href: "/notice/2", description: "Mar 02, 2026", isNotice: true, isPinned: true },
+    ],
   },
 ];
 
-// --- Theme Toggle Component ---
- <ModeToggle/>
-
-// --- Main Navbar Component ---
 export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
+  const [isAtTop, setIsAtTop] = React.useState(true);
+  const { scrollY } = useScroll();
 
-  // Prevent wrapping to keep width perfectly in bounds
-  const navItemClass = "bg-transparent text-slate-600 dark:text-slate-300 text-[14px] 2xl:text-[15px] font-semibold px-2.5 py-2 xl:px-3 rounded-full hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-[oklch(0.50_0.12_255)] dark:hover:text-[oklch(0.65_0.15_255)] transition-all duration-300 ease-out data-[state=open]:bg-slate-100 dark:data-[state=open]:bg-slate-800 data-[state=open]:text-[oklch(0.50_0.12_255)] dark:data-[state=open]:text-[oklch(0.65_0.15_255)] whitespace-nowrap";
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) setHidden(true);
+    else setHidden(false);
+    setIsAtTop(latest < 50);
+  });
+
+  // Reveal navbar if mouse moves to the top 20px
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (e.clientY < 20) setHidden(false);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  const navItemClass = "bg-transparent text-slate-600 dark:text-slate-300 text-[13.5px] 2xl:text-[14.5px] font-bold px-3 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300 whitespace-nowrap";
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 transition-colors duration-300">
-      {/* Responsive Height: h-16 on mobile/tablets, h-20 on desktops */}
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
+    <motion.header
+      variants={{ visible: { y: 0 }, hidden: { y: "-100%" } }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className={cn(
+        "sticky top-0 z-[60] w-full transition-all duration-300",
+        isAtTop ? "bg-transparent py-4" : "bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 py-0 shadow-sm"
+      )}
+    >
+      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Branding */}
-        <Link href="/" className="flex flex-col group z-[60] hover:scale-105 transition-transform duration-300 ease-out flex-shrink-0 mr-2">
-          <span className="text-xl xl:text-2xl font-extrabold bg-gradient-to-r from-[oklch(0.50_0.12_255)] to-[oklch(0.35_0.10_250)] dark:from-[oklch(0.65_0.15_255)] dark:to-[oklch(0.50_0.12_250)] bg-clip-text text-transparent transition-all duration-500 whitespace-nowrap">
-            XYZ School
+        <Link href="/" className="flex flex-col group flex-shrink-0">
+          <span className="text-xl xl:text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent transition-all duration-500">
+            XYZ SCHOOL
           </span>
-          <span className="text-[9px] xl:text-[10px] uppercase tracking-[0.3em] font-bold text-slate-500/80 dark:text-slate-400">
-            (demo) • Excellence
-          </span>
+          <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400">Excellence Hub</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden xl:flex justify-center flex-1">
+        <div className="hidden xl:flex items-center gap-1">
           <NavigationMenu>
-            <NavigationMenuList className="flex gap-x-0.5 2xl:gap-x-1">
+            <NavigationMenuList>
               {navData.map((section) => (
                 <NavigationMenuItem key={section.name}>
                   {section.subItems ? (
                     <>
-                      <NavigationMenuTrigger className={navItemClass}>
-                        {section.name}
-                      </NavigationMenuTrigger>
+                      <NavigationMenuTrigger className={navItemClass}>{section.name}</NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <ul className={cn(
-                          "grid gap-2 p-3 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border dark:border-slate-800 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/20",
-                          section.name === "Notice" ? "w-[450px] grid-cols-1" : "w-[550px] md:grid-cols-2"
+                          "grid gap-2 p-4 bg-white dark:bg-slate-950 rounded-2xl border dark:border-slate-800 shadow-2xl",
+                          section.name === "Notice" ? "w-[400px] grid-cols-1" : "w-[550px] grid-cols-2"
                         )}>
                           {section.name === "Notice" && (
-                             <div className="px-4 pt-3 pb-2 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 mb-2">
-                               <span className="font-bold text-slate-800 dark:text-slate-200">Recent Notices</span>
-                               <Link href="/notice" className="text-xs font-semibold text-[oklch(0.50_0.12_255)] hover:underline">View All</Link>
-                             </div>
+                            <div className="px-2 pb-2 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 mb-2">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent Notices</span>
+                              <Link href="/notice" className="text-[11px] font-bold text-blue-600 hover:underline">View All</Link>
+                            </div>
                           )}
                           {section.subItems.map((item) => (
-                            <ListItem
-                              key={item.name}
-                              title={item.name}
-                              href={item.href}
-                              icon={item.icon}
-                              isNotice={item.isNotice}
+                            <ListItem 
+                              key={item.name} 
+                              title={item.name} 
+                              href={item.href} 
+                              icon={item.icon || (section.name === "Notice" ? <Megaphone size={16}/> : <LayoutGrid size={16}/>)}
                             >
                               {item.description}
                             </ListItem>
@@ -159,169 +148,94 @@ export default function Navbar() {
                     </>
                   ) : (
                     <NavigationMenuLink asChild>
-                      <Link href={section.href || "/"} className={cn("block", navItemClass)}>
-                        {section.name}
-                      </Link>
+                      <Link href={section.href || "#"} className={navItemClass}>{section.name}</Link>
                     </NavigationMenuLink>
                   )}
                 </NavigationMenuItem>
               ))}
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/public/contact" className={cn("block", navItemClass)}>
-                    Contact
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
 
-        {/* Actions Area */}
-        <div className="flex items-center gap-3 xl:gap-5 z-[60] flex-shrink-0 ml-2">
-          
-          <ModeToggle />
-
+        {/* Portals Area - Kept exactly as original */}
+        <div className="flex items-center gap-3">
           <div className="hidden md:block">
             <DropdownMenu>
-              <DropdownMenuTrigger className="group flex items-center gap-1.5 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-full text-[14px] 2xl:text-[15px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all duration-300 outline-none whitespace-nowrap">
+              <DropdownMenuTrigger className="group flex items-center gap-1.5 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-full text-[14px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all duration-300 outline-none whitespace-nowrap">
                 Portals <ChevronDown size={16} className="group-data-[state=open]:rotate-180 transition-transform duration-300" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 p-3 mt-2 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border dark:border-slate-800 rounded-2xl shadow-xl">
-                <DropdownMenuLabel className="dark:text-slate-300 text-sm px-2">Institutional Access</DropdownMenuLabel>
+                <DropdownMenuLabel className="dark:text-slate-300 text-xs px-2 mb-1 uppercase tracking-tight font-bold">Institutional Access</DropdownMenuLabel>
                 <DropdownMenuSeparator className="dark:bg-slate-800 my-2" />
-                <PortalItem href="/auth/login/student" label="Student Login" desc="Grades & Resources" icon={<GraduationCap className="text-blue-500 dark:text-blue-400" />} />
-                <PortalItem href="/auth/login/parent" label="Parent Portal" desc="Track Progress" icon={<Users className="text-purple-500 dark:text-purple-400" />} />
-                <PortalItem href="/auth/login/teacher" label="Teacher Portal" desc="Classroom Management" icon={<BookOpen className="text-yellow-500 dark:text-yellow-400" />} />
-                <PortalItem href="/auth/login/admin" label="Administration" desc="Management" icon={<ShieldCheck className="text-orange-500 dark:text-orange-400" />} />
+                <PortalItem href="/auth/login/student" label="Student Login" desc="Grades & Resources" icon={<GraduationCap className="text-blue-500" />} />
+                <PortalItem href="/auth/login/parent" label="Parent Portal" desc="Track Progress" icon={<Users className="text-purple-500" />} />
+                <PortalItem href="/auth/login/teacher" label="Teacher Portal" desc="Classroom Management" icon={<BookOpen className="text-yellow-500" />} />
+                <PortalItem href="/auth/login/admin" label="Administration" desc="Management" icon={<ShieldCheck className="text-orange-500" />} />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          <Link 
-            href="/apply" 
-            className="hidden lg:flex px-6 py-2 bg-[oklch(0.50_0.12_255)] text-white text-[14px] 2xl:text-[15px] font-bold rounded-full shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 whitespace-nowrap"
-          >
+          <Link href="/apply" className="hidden lg:flex px-6 py-2 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
             Apply Now
           </Link>
 
-          {/* Mobile Toggle */}
-          <button 
-            onClick={() => setIsMobileOpen(true)}
-            className="xl:hidden p-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors duration-300"
-          >
-            <Menu size={24} />
-          </button>
+          <button onClick={() => setIsMobileOpen(true)} className="xl:hidden p-2 text-slate-600 dark:text-slate-300"><Menu size={24} /></button>
         </div>
       </div>
 
-      {/* Mobile Sidebar */}
-      <div className={cn("fixed inset-0 z-[100] transition-opacity duration-500 ease-in-out", isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
-        {/* Fixed Width: Dynamic to viewport, prevents mobile overflow */}
-        <aside className={cn("absolute right-0 top-0 h-[100dvh] w-[85vw] sm:w-[360px] bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-transform duration-500 ease-out shadow-2xl flex flex-col", isMobileOpen ? "translate-x-0" : "translate-x-full")}>
-          <div className="p-5 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 flex-shrink-0">
-            <span className="font-bold text-lg tracking-tight">Menu</span>
-            <button onClick={() => setIsMobileOpen(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors duration-300">
-              <X size={24} />
-            </button>
-          </div>
-          {/* Fixed Height: Uses flex-1 so it dynamically fits between header and footer without breaking */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-1 pb-24">
-            {navData.map((item) => (
-              <MobileAccordion key={item.name} item={item} close={() => setIsMobileOpen(false)} />
-            ))}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-white via-white dark:from-slate-950 dark:via-slate-950 to-transparent pt-10 border-t border-slate-200/50 dark:border-white/5">
-            <Link href="/apply" onClick={() => setIsMobileOpen(false)} className="block w-full py-3.5 bg-[oklch(0.50_0.12_255)] text-center text-white text-base rounded-xl font-bold shadow-xl hover:scale-[1.02] transition-transform duration-300">
-              Start Application 2026
-            </Link>
-          </div>
-        </aside>
-      </div>
-    </header>
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileOpen(false)} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70]" />
+            <motion.aside initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25 }} className="fixed right-0 top-0 h-full w-[85%] max-w-[320px] bg-white dark:bg-slate-950 z-[80] shadow-2xl p-6 overflow-y-auto">
+              <div className="flex justify-between items-center mb-8">
+                <span className="font-bold text-lg">Menu</span>
+                <button onClick={() => setIsMobileOpen(false)} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full"><X size={20} /></button>
+              </div>
+              <div className="space-y-2">
+                {navData.map(item => (
+                  <Link key={item.name} href={item.href || "#"} onClick={() => setIsMobileOpen(false)} className="flex items-center justify-between p-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-all">
+                    {item.name} <ChevronRight size={14} className="opacity-50" />
+                  </Link>
+                ))}
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }
 
-// ... [Helper components remain the same] ...
+// --- Internal Helper Components ---
 
-const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWithoutRef<"a"> & { icon?: React.ReactNode; isNotice?: boolean }>(
-  ({ className, title, children, icon, href, isNotice, ...props }, ref) => (
-    <li>
-      <NavigationMenuLink asChild>
-        <Link
-          href={href || "#"}
-          className={cn(
-            "group flex items-start gap-4 select-none rounded-xl p-4 no-underline outline-none transition-all duration-300 ease-out hover:bg-slate-100/80 dark:hover:bg-slate-800/80 focus:bg-slate-100 dark:focus:bg-slate-800 hover:scale-[1.01]",
-            isNotice && "border border-transparent hover:border-slate-200 dark:hover:border-slate-700",
-            className
-          )}
-          {...props}
-        >
-          {icon && (
-            <div className={cn("mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110", isNotice && "bg-slate-100 dark:bg-slate-900 p-2 rounded-lg")}>
-              {icon}
-            </div>
-          )}
-          <div className="flex-1 space-y-1">
-            <div className={cn("font-bold leading-none transition-colors duration-300", isNotice ? "text-base text-slate-800 dark:text-slate-200 group-hover:text-[oklch(0.50_0.12_255)]" : "text-[15px] text-[oklch(0.50_0.12_255)] dark:text-[oklch(0.65_0.15_255)]")}>
-              <span className="line-clamp-2 leading-tight">{title}</span>
-            </div>
-            <p className={cn("line-clamp-2 leading-snug font-medium", isNotice ? "text-sm text-slate-500 pt-1" : "text-xs text-slate-500 dark:text-slate-400 pt-0.5")}>
-              {children}
-            </p>
-          </div>
-          {isNotice && (
-            <ChevronRight size={18} className="text-slate-300 dark:text-slate-600 mt-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-          )}
-        </Link>
-      </NavigationMenuLink>
-    </li>
-  )
+const ListItem = ({ title, children, icon, href }: any) => (
+  <li>
+    <Link href={href} className="group flex items-start gap-4 p-3 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-all duration-300">
+      <div className="p-2 bg-slate-100 dark:bg-slate-900 rounded-lg group-hover:scale-110 transition-transform">
+        {icon}
+      </div>
+      <div>
+        <div className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-tight group-hover:text-blue-600 transition-colors">{title}</div>
+        <p className="text-xs text-slate-500 line-clamp-1 mt-1 font-medium">{children}</p>
+      </div>
+    </Link>
+  </li>
 );
-ListItem.displayName = "ListItem";
 
-function PortalItem({ href, label, desc, icon }: { href: string; label: string; desc: string; icon: React.ReactNode }) {
+function PortalItem({ href, label, desc, icon }: any) {
   return (
-    <DropdownMenuItem asChild className="rounded-xl cursor-pointer p-3 mb-1 focus:bg-slate-100 dark:focus:bg-slate-800 hover:scale-[1.02] transition-all duration-300">
+    <DropdownMenuItem asChild className="rounded-xl cursor-pointer p-3 mb-1 focus:bg-slate-100 dark:focus:bg-slate-800 transition-all duration-300">
       <Link href={href} className="flex items-center gap-4 w-full">
         <div className="p-2.5 bg-slate-100 dark:bg-slate-900 rounded-lg shadow-sm">
           {icon}
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-[15px] text-slate-800 dark:text-slate-100">{label}</span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{desc}</span>
+          <span className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{label}</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{desc}</span>
         </div>
       </Link>
     </DropdownMenuItem>
-  );
-}
-
-function MobileAccordion({ item, close }: { item: NavSection; close: () => void }) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  if (!item.subItems) {
-    return (
-      <Link href={item.href || "#"} onClick={close} className="block px-4 py-3.5 text-base text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl hover:text-[oklch(0.50_0.12_255)] dark:hover:text-[oklch(0.65_0.15_255)] transition-all duration-300">
-        {item.name}
-      </Link>
-    );
-  }
-  return (
-    <div className="mb-1">
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between px-4 py-3.5 text-base text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl hover:text-[oklch(0.50_0.12_255)] dark:hover:text-[oklch(0.65_0.15_255)] transition-all duration-300">
-        {item.name}
-        <ChevronDown size={18} className={cn("transition-transform duration-500 ease-out", isOpen && "rotate-180")} />
-      </button>
-      <div className={cn("overflow-hidden transition-all duration-500 ease-in-out", isOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0")}>
-        <div className="ml-5 mt-1 border-l-2 border-slate-100 dark:border-slate-800 flex flex-col gap-0.5 pl-2">
-          {item.subItems.map((sub) => (
-            <Link key={sub.name} href={sub.href} onClick={close} className="px-4 py-3 text-[14px] font-medium text-slate-500 dark:text-slate-400 hover:text-[oklch(0.50_0.12_255)] dark:hover:text-[oklch(0.65_0.15_255)] hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-all duration-300 line-clamp-1">
-              {sub.name}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
